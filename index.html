@@ -392,6 +392,64 @@
   }
   .search-clear.visible { display: flex; }
 
+  .search-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    max-height: 380px;
+    overflow-y: auto;
+    z-index: 50;
+  }
+  .search-results.visible { display: block; }
+  .search-result-count {
+    padding: 10px 16px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-result-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-item:hover { background: var(--step-bg); }
+  .search-result-section {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--maroon);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 3px;
+  }
+  .search-result-snippet {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.4;
+  }
+  .search-result-snippet mark { background: var(--gold-light); color: var(--maroon-dark); }
+  .search-no-results {
+    padding: 20px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
   /* ── FOOTER ──────────────────────────────────── */
   .site-footer {
     background: var(--maroon-dark);
@@ -567,8 +625,9 @@
   <!-- SEARCH -->
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input class="search-input" type="text" id="searchInput" placeholder="Search for a step or topic… (e.g. "clock out", "PTO", "odometer")" autocomplete="off">
+    <input class="search-input" type="text" id="searchInput" placeholder="Search for a step or topic… (e.g. &quot;clock out&quot;, &quot;PTO&quot;, &quot;odometer&quot;)" autocomplete="off">
     <button class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+    <div class="search-results" id="searchResults"></div>
   </div>
 
   <!-- ══════════════════════════════════════════ -->
@@ -971,12 +1030,12 @@
 
     <div class="tab-group">
       <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab(this, 'trans-web')">🖥 Web Browser</button>
-        <button class="tab-btn" onclick="switchTab(this, 'trans-mobile')">📱 Mobile App</button>
+        <button class="tab-btn" onclick="switchTab(this, 'trans-web')">🖥 Web Browser</button>
+        <button class="tab-btn active" onclick="switchTab(this, 'trans-mobile')">📱 Mobile App</button>
       </div>
 
       <!-- TRANSPORT WEB -->
-      <div class="tab-pane active" id="trans-web">
+      <div class="tab-pane" id="trans-web">
         <div class="sub-tab-bar">
           <button class="sub-tab-btn active" onclick="switchSub(this, 'tw-personal')">Personal Vehicle</button>
           <button class="sub-tab-btn" onclick="switchSub(this, 'tw-company')">Company Vehicle</button>
@@ -1021,7 +1080,7 @@
       </div><!-- /trans-web -->
 
       <!-- TRANSPORT MOBILE -->
-      <div class="tab-pane" id="trans-mobile">
+      <div class="tab-pane active" id="trans-mobile">
         <div class="sub-tab-bar">
           <button class="sub-tab-btn active" onclick="switchSub(this, 'tm-agency')">Agency (Company) Vehicle</button>
           <button class="sub-tab-btn" onclick="switchSub(this, 'tm-personal')">Personal Vehicle</button>
@@ -1435,45 +1494,163 @@ window.addEventListener('scroll', () => {
 // ── SEARCH ────────────────────────────────────────
 const searchInput = document.getElementById('searchInput');
 const searchClear = document.getElementById('searchClear');
+const searchResults = document.getElementById('searchResults');
 
-searchInput.addEventListener('input', function() {
-  const q = this.value.trim().toLowerCase();
-  searchClear.classList.toggle('visible', q.length > 0);
+function clearHighlights() {
+  document.querySelectorAll('mark.search-mark').forEach(m => {
+    const parent = m.parentNode;
+    parent.replaceChild(document.createTextNode(m.textContent), m);
+    parent.normalize();
+  });
+}
 
-  // Remove old highlights
-  document.querySelectorAll('mark').forEach(m => {
-    m.outerHTML = m.innerHTML;
+function highlightInElement(el, q) {
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) {
+    if (walker.currentNode.textContent.toLowerCase().includes(q)) nodes.push(walker.currentNode);
+  }
+  nodes.forEach(node => {
+    const span = document.createElement('span');
+    span.innerHTML = node.textContent.replace(re, '<mark class="search-mark">$1</mark>');
+    node.parentNode.replaceChild(span, node);
+  });
+}
+
+function getSnippet(text, q) {
+  const lower = text.toLowerCase();
+  const idx = lower.indexOf(q);
+  if (idx === -1) return text.slice(0, 100);
+  const start = Math.max(0, idx - 35);
+  const end = Math.min(text.length, idx + q.length + 55);
+  let snippet = text.slice(start, end).trim();
+  if (start > 0) snippet = '…' + snippet;
+  if (end < text.length) snippet += '…';
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return snippet.replace(re, '<mark>$1</mark>');
+}
+
+function revealMatch(el) {
+  // Expand parent tab-pane if hidden
+  const tabPane = el.closest('.tab-pane');
+  if (tabPane && !tabPane.classList.contains('active')) {
+    const group = tabPane.closest('.tab-group');
+    const idx = Array.from(group.querySelectorAll(':scope > .tab-pane')).indexOf(tabPane);
+    const btn = group.querySelectorAll(':scope > .tab-bar > .tab-btn')[idx];
+    if (btn) switchTab(btn, tabPane.id);
+  }
+  // Expand parent sub-pane if hidden
+  const subPane = el.closest('.sub-pane');
+  if (subPane && !subPane.classList.contains('active')) {
+    const bar = subPane.closest('.tab-pane, .tab-group')?.querySelector('.sub-tab-bar');
+    if (bar) {
+      const idx = Array.from(subPane.parentElement.querySelectorAll('.sub-pane')).indexOf(subPane);
+      const btn = bar.querySelectorAll('.sub-tab-btn')[idx];
+      if (btn) switchSub(btn, subPane.id);
+    }
+  }
+  // Expand FAQ item if hidden
+  const faqItem = el.closest('.faq-item');
+  if (faqItem && !faqItem.classList.contains('open')) {
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    faqItem.classList.add('open');
+  }
+}
+
+function runSearch(q) {
+  clearHighlights();
+  searchResults.innerHTML = '';
+  searchResults.classList.remove('visible');
+  if (!q) return;
+
+  const sections = document.querySelectorAll('.main > .section');
+  const results = []; // { sectionTitle, sectionId, snippet, targetEl }
+
+  sections.forEach(section => {
+    const titleEl = section.querySelector('.section-title');
+    const sectionTitle = titleEl ? titleEl.textContent.trim() : '';
+    const sectionId = section.id;
+
+    // Collect candidate text-bearing elements within this section
+    const candidates = section.querySelectorAll('.step-action, .step-note, .faq-q span:first-child, .faq-a, .callout-title, .callout-list li, .qr-table td, .link-card-title, .link-card-desc');
+    candidates.forEach(elNode => {
+      const text = elNode.textContent || '';
+      if (text.toLowerCase().includes(q)) {
+        results.push({
+          sectionTitle,
+          sectionId,
+          snippet: getSnippet(text.trim(), q),
+          targetEl: elNode
+        });
+      }
+    });
   });
 
-  if (!q) {
-    // Show all steps
-    document.querySelectorAll('.step, .qr-table tr').forEach(el => el.style.display = '');
+  // Highlight all matches in place
+  document.querySelectorAll('.step-action, .step-note, .faq-q span:first-child, .faq-a, .callout-title, .callout-list li, .qr-table td, .link-card-title, .link-card-desc').forEach(el => {
+    if ((el.textContent || '').toLowerCase().includes(q)) highlightInElement(el, q);
+  });
+
+  if (results.length === 0) {
+    searchResults.innerHTML = '<div class="search-no-results">No matches found. Try a different word.</div>';
+    searchResults.classList.add('visible');
     return;
   }
 
-  // Highlight matching text in step-action and step-note
-  const walker = document.createTreeWalker(document.querySelector('.main'), NodeFilter.SHOW_TEXT);
-  const nodes = [];
-  while (walker.nextNode()) {
-    const n = walker.currentNode;
-    if (n.parentElement.closest('.search-wrap')) continue;
-    if (n.textContent.toLowerCase().includes(q)) nodes.push(n);
+  // Dedupe by section, cap results shown, group snippets per section (max 4 per section)
+  const seenPerSection = {};
+  const limited = [];
+  for (const r of results) {
+    seenPerSection[r.sectionId] = (seenPerSection[r.sectionId] || 0) + 1;
+    if (seenPerSection[r.sectionId] <= 4) limited.push(r);
+    if (limited.length >= 25) break;
   }
-  nodes.forEach(node => {
-    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-    const span = document.createElement('span');
-    span.innerHTML = node.textContent.replace(re, '<mark>$1</mark>');
-    node.parentNode.replaceChild(span, node);
+
+  const countLabel = document.createElement('div');
+  countLabel.className = 'search-result-count';
+  countLabel.textContent = `${results.length} match${results.length === 1 ? '' : 'es'} found`;
+  searchResults.appendChild(countLabel);
+
+  limited.forEach(r => {
+    const item = document.createElement('button');
+    item.className = 'search-result-item';
+    item.innerHTML = `<div class="search-result-section">→ ${r.sectionTitle}</div><div class="search-result-snippet">${r.snippet}</div>`;
+    item.addEventListener('click', () => {
+      revealMatch(r.targetEl);
+      searchResults.classList.remove('visible');
+      setTimeout(() => {
+        r.targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+    });
+    searchResults.appendChild(item);
   });
 
-  // Scroll to first match
-  const firstMark = document.querySelector('mark');
-  if (firstMark) firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  searchResults.classList.add('visible');
+}
+
+let searchDebounce;
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  searchClear.classList.toggle('visible', q.length > 0);
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => runSearch(q), 150);
+});
+
+searchInput.addEventListener('focus', function() {
+  if (this.value.trim() && searchResults.innerHTML) searchResults.classList.add('visible');
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-wrap')) searchResults.classList.remove('visible');
 });
 
 searchClear.addEventListener('click', () => {
   searchInput.value = '';
-  searchInput.dispatchEvent(new Event('input'));
+  clearHighlights();
+  searchResults.innerHTML = '';
+  searchResults.classList.remove('visible');
+  searchClear.classList.remove('visible');
   searchInput.focus();
 });
 </script>
