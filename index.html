@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCM Time & Attendance - Staff Guide</title>
+<style>
+  /* ── TOKENS ─────────────────────────────────── */
+  :root {
+    --maroon:      #8B1A2B;
+    --maroon-dark: #6B1220;
+    --maroon-mid:  #A52035;
+    --gold:        #D4A853;
+    --gold-light:  #F5E8C8;
+    --gold-dim:    #B8902E;
+    --off-white:   #FAF8F5;
+    --surface:     #FFFFFF;
+    --border:      #E8E0D8;
+    --text:        #1C1917;
+    --text-mid:    #57534E;
+    --text-light:  #A8A29E;
+    --step-bg:     #F7F4F1;
+    --warning-bg:  #FEF9EE;
+    --radius:      12px;
+    --radius-sm:   8px;
+    --shadow-sm:   0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:   0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+    --shadow-lg:   0 12px 32px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+    --transition:  0.18s ease;
+  }
+
+  /* ── RESET ───────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ──────────────────────────────────── */
+  .site-header {
+    background: var(--maroon);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 18px 24px 14px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .header-icon {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .header-title h1 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+  }
+  .header-title p {
+    font-size: 12px;
+    color: rgba(255,255,255,.65);
+    margin-top: 1px;
+  }
+  .header-badge {
+    margin-left: auto;
+    background: var(--gold);
+    color: var(--maroon-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* ── NAV PILLS ───────────────────────────────── */
+  .nav-strip {
+    background: var(--maroon-dark);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-strip::-webkit-scrollbar { display: none; }
+  .nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .nav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    color: rgba(255,255,255,.7);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color var(--transition), border-color var(--transition);
+    letter-spacing: .01em;
+    flex-shrink: 0;
+  }
+  .nav-pill:hover, .nav-pill.active {
+    color: white;
+    border-bottom-color: var(--gold);
+  }
+  .nav-pill .icon { font-size: 14px; }
+
+  /* ── LAYOUT ──────────────────────────────────── */
+  .main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ── HERO ────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-mid) 100%);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    color: white;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "⏱";
+    position: absolute;
+    right: 32px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 88px;
+    opacity: .07;
+    pointer-events: none;
+  }
+  .hero h2 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    margin-bottom: 8px;
+  }
+  .hero p { color: rgba(255,255,255,.75); font-size: 14px; max-width: 520px; }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .hero-chip {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.85);
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--transition);
+  }
+  .hero-chip:hover { background: rgba(255,255,255,.2); }
+
+  /* ── SECTION ─────────────────────────────────── */
+  .section { margin-bottom: 48px; scroll-margin-top: 100px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    width: 34px; height: 34px;
+    background: var(--maroon);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--maroon);
+    letter-spacing: -.02em;
+  }
+  .section-icon { font-size: 22px; }
+
+  /* ── TABS (web / mobile) ─────────────────────── */
+  .tab-group { margin-bottom: 20px; }
+  .tab-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-mid);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  .tab-btn:hover { border-color: var(--gold); color: var(--maroon); }
+  .tab-btn.active {
+    color: white;
+    background: var(--maroon);
+    border-color: var(--maroon);
+    box-shadow: var(--shadow-md);
+  }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── SUB-TABS (CP / CLA) ─────────────────────── */
+  .sub-tab-bar {
+    display: flex; gap: 6px; margin-bottom: 16px;
+  }
+  .sub-tab-btn {
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: white;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .sub-tab-btn.active, .sub-tab-btn:hover {
+    background: var(--maroon);
+    border-color: var(--maroon);
+    color: white;
+  }
+  .sub-pane { display: none; }
+  .sub-pane.active { display: block; }
+
+  /* ── STEPS ───────────────────────────────────── */
+  .steps { display: flex; flex-direction: column; gap: 6px; }
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition);
+  }
+  .step:hover { box-shadow: var(--shadow-md); }
+  .step-num {
+    width: 26px; height: 26px;
+    background: var(--maroon);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body { flex: 1; }
+  .step-action { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.45; }
+  .step-note {
+    font-size: 12.5px;
+    color: var(--text-mid);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .step-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .tag-path {
+    background: #EEF2FF;
+    color: #4338CA;
+  }
+
+  /* ── CALLOUTS ────────────────────────────────── */
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin: 16px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body {}
+  .callout-title { font-size: 13.5px; font-weight: 700; margin-bottom: 6px; }
+  .callout-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .callout-list li { font-size: 13.5px; line-height: 1.5; padding-left: 14px; position: relative; }
+  .callout-list li::before { content: "•"; position: absolute; left: 0; }
+
+  .callout-warning {
+    background: var(--warning-bg);
+    border: 1.5px solid var(--gold);
+    border-left: 4px solid var(--maroon);
+  }
+  .callout-warning .callout-title { color: var(--maroon); }
+  .callout-warning .callout-list li { color: var(--text); }
+  .callout-warning .callout-list li::before { color: var(--gold-dim); }
+
+  .callout-info {
+    background: #EFF6FF;
+    border: 1.5px solid #BFDBFE;
+    border-left: 4px solid #2563EB;
+  }
+  .callout-info .callout-title { color: #1D4ED8; }
+  .callout-info .callout-list li { color: var(--text); }
+  .callout-info .callout-list li::before { color: #60A5FA; }
+
+  /* ── SAVE vs SUBMIT BANNER ───────────────────── */
+  .save-banner {
+    background: var(--maroon);
+    color: white;
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .save-banner-icon { font-size: 28px; flex-shrink: 0; }
+  .save-banner h4 { font-size: 14.5px; font-weight: 800; margin-bottom: 8px; }
+  .save-banner ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .save-banner ul li { font-size: 13.5px; color: rgba(255,255,255,.85); padding-left: 16px; position: relative; }
+  .save-banner ul li::before { content: "→"; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+
+  /* ── QUICK REFERENCE TABLE ───────────────────── */
+  .qr-table { width: 100%; border-collapse: collapse; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .qr-table thead tr { background: var(--maroon); }
+  .qr-table thead th { padding: 11px 16px; font-size: 12.5px; font-weight: 700; color: white; text-align: left; letter-spacing: .03em; text-transform: uppercase; }
+  .qr-table tbody tr { border-bottom: 1px solid var(--border); background: white; }
+  .qr-table tbody tr:nth-child(even) { background: var(--step-bg); }
+  .qr-table tbody tr:hover { background: var(--gold-light); }
+  .qr-table td { padding: 11px 16px; font-size: 13.5px; vertical-align: top; }
+  .qr-table td:first-child { font-weight: 600; color: var(--maroon); width: 220px; }
+  .qr-path { font-size: 12.5px; color: var(--text-mid); font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; }
+
+  /* ── SEARCH ──────────────────────────────────── */
+  .search-wrap { position: relative; margin-bottom: 28px; }
+  .search-input {
+    width: 100%;
+    padding: 13px 16px 13px 44px;
+    font-size: 14.5px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: white;
+    color: var(--text);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    font-family: inherit;
+  }
+  .search-input:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(139,26,43,.1); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: var(--text-light); pointer-events: none;
+  }
+  .search-clear {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: var(--border); border: none; border-radius: 50%;
+    width: 22px; height: 22px; cursor: pointer; display: none;
+    align-items: center; justify-content: center; font-size: 13px; color: var(--text-mid);
+  }
+  .search-clear.visible { display: flex; }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  .site-footer {
+    background: var(--maroon-dark);
+    color: rgba(255,255,255,.55);
+    text-align: center;
+    padding: 20px 24px;
+    font-size: 12px;
+    margin-top: 0;
+  }
+  .site-footer strong { color: rgba(255,255,255,.85); }
+
+  /* ── RESPONSIVE ──────────────────────────────── */
+  @media (max-width: 600px) {
+    .main { padding: 20px 16px 60px; }
+    .hero { padding: 28px 22px; }
+    .hero h2 { font-size: 21px; }
+    .hero::after { display: none; }
+    .header-badge { display: none; }
+    .qr-table td:first-child { width: 140px; }
+  }
+
+  /* ── HIGHLIGHT ───────────────────────────────── */
+  mark { background: var(--gold-light); color: var(--maroon-dark); border-radius: 2px; padding: 0 2px; }
+
+  /* ── FAQ ACCORDION ───────────────────────────── */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+  .faq-item {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .faq-q {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: inherit;
+    transition: background var(--transition);
+  }
+  .faq-q:hover { background: var(--step-bg); }
+  .faq-item.open .faq-q { background: var(--step-bg); color: var(--maroon); }
+  .faq-arrow { font-size: 16px; color: var(--text-light); flex-shrink: 0; transition: transform var(--transition); }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--maroon); }
+  .faq-a {
+    display: none;
+    padding: 0 18px 16px;
+    font-size: 13.5px;
+    color: var(--text-mid);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .faq-item.open .faq-a { display: block; }
+  .faq-a strong { color: var(--text); }
+  .faq-a a { color: var(--maroon); }
+
+  /* ── LINK CARDS ──────────────────────────────── */
+  .link-cards { display: flex; flex-direction: column; gap: 12px; }
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  }
+  .link-card:hover {
+    border-color: var(--maroon);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  .link-card-icon {
+    font-size: 28px;
+    width: 48px; height: 48px;
+    background: var(--step-bg);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .link-card-body { flex: 1; }
+  .link-card-title { font-size: 15px; font-weight: 700; color: var(--maroon); margin-bottom: 3px; }
+  .link-card-desc { font-size: 13px; color: var(--text-mid); margin-bottom: 4px; }
+  .link-card-url { font-size: 12px; color: var(--text-light); font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; }
+  .link-card-arrow { font-size: 18px; color: var(--maroon); opacity: .4; flex-shrink: 0; transition: opacity var(--transition), transform var(--transition); }
+  .link-card:hover .link-card-arrow { opacity: 1; transform: translateX(3px); }
+
+  /* ── SCROLL-TO-TOP ───────────────────────────── */
+  .scroll-top {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--maroon);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s;
+    z-index: 200;
+  }
+  .scroll-top.visible { opacity: 1; pointer-events: auto; }
+</style>
+</head>
+<body>
+
+<!-- ── STICKY HEADER ───────────────────────────── -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="header-icon">🕐</div>
+      <div class="header-title">
+        <h1>iCareManager - Time &amp; Attendance</h1>
+        <p>Staff Reference Guide</p>
+      </div>
+    </div>
+    <div class="header-badge">Shared Support Inc.</div>
+  </div>
+</header>
+
+<!-- ── NAV STRIP ───────────────────────────────── -->
+<nav class="nav-strip" aria-label="Sections">
+  <div class="nav-inner">
+    <a href="#clock-inout"   class="nav-pill active"><span class="icon">⏱</span> Clock In/Out</a>
+    <a href="#training"      class="nav-pill"><span class="icon">🎓</span> Training Punches</a>
+    <a href="#edit-punches"  class="nav-pill"><span class="icon">✏️</span> Edit Punches</a>
+    <a href="#hours-pto"     class="nav-pill"><span class="icon">📋</span> Hours &amp; PTO Balance</a>
+    <a href="#request-pto"   class="nav-pill"><span class="icon">📅</span> Request PTO</a>
+    <a href="#transport"     class="nav-pill"><span class="icon">🚗</span> Transportation</a>
+    <a href="#tips"          class="nav-pill"><span class="icon">❓</span> FAQ</a>
+    <a href="#links"         class="nav-pill"><span class="icon">🔗</span> Links</a>
+    <a href="#quick-ref"     class="nav-pill"><span class="icon">⚡</span> Quick Reference</a>
+  </div>
+</nav>
+
+<!-- ── MAIN ────────────────────────────────────── -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>Your iCM Guide - Everything in one place</h2>
+    <p>Step-by-step instructions for clocking in and out, logging transportation, managing PTO, and editing punches - on web and mobile.</p>
+    <div class="hero-chips">
+      <a href="#clock-inout" class="hero-chip">⏱ Clock In/Out</a>
+      <a href="#training" class="hero-chip">🎓 Training Punches</a>
+      <a href="#edit-punches" class="hero-chip">✏️ Edit Punches</a>
+      <a href="#hours-pto" class="hero-chip">📋 Check Hours &amp; PTO</a>
+      <a href="#request-pto" class="hero-chip">📅 Request Time Off</a>
+      <a href="#transport" class="hero-chip">🚗 Transportation Log</a>
+      <a href="#tips" class="hero-chip">❓ FAQ</a>
+      <a href="#quick-ref" class="hero-chip">⚡ Quick Reference</a>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="searchInput" placeholder="Search for a step or topic… (e.g. "clock out", "PTO", "odometer")" autocomplete="off">
+    <button class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 1. CLOCK IN / OUT -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="clock-inout">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <span class="section-icon">⏱</span>
+      <h2 class="section-title">Clocking In &amp; Out</h2>
+    </div>
+
+    <div class="tab-group">
+      <div class="tab-bar">
+        <button class="tab-btn" onclick="switchTab(this, 'cio-web')">🖥 Web Browser</button>
+        <button class="tab-btn active" onclick="switchTab(this, 'cio-mobile')">📱 Mobile App</button>
+      </div>
+
+      <!-- WEB TAB -->
+      <div class="tab-pane" id="cio-web">
+        <div class="sub-tab-bar">
+          <button class="sub-tab-btn active" onclick="switchSub(this, 'web-cp')">Community Participation (CP)</button>
+          <button class="sub-tab-btn" onclick="switchSub(this, 'web-cla')">CLA</button>
+        </div>
+
+        <div class="sub-pane active" id="web-cp">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Select your <strong>name (top right)</strong> → <strong>Clock In</strong></div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Select <strong>Program:</strong> Community Participation Support</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select <strong>Job Code:</strong> Regular</div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-action">Select the <strong>Individual</strong> you are supporting</div></div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body">
+              <div class="step-action">Select <strong>Funding Stream:</strong> CPS Community 1:1 - or CPS Community 2:1 if two staff to one individual</div>
+              <div class="step-note">Only select 2:1 when you are co-staffing with another employee on the same individual.</div>
+            </div></div>
+            <div class="step"><div class="step-num">6</div><div class="step-body">
+              <div class="step-action">Confirm <strong>date and time</strong> are correct → click <strong>Clock In</strong></div>
+              <div class="step-note">Your location is tracked at clock-in.</div>
+            </div></div>
+            <div class="step"><div class="step-num">7</div><div class="step-body">
+              <div class="step-action"><em>When shift ends:</em> Select your name → <strong>Clock Out</strong></div>
+              <div class="step-note">Confirms the individual, program, and your current address/location.</div>
+            </div></div>
+            <div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-action">Complete the <strong>Checklist</strong> - select all activities that apply for the shift</div></div></div>
+            <div class="step"><div class="step-num">9</div><div class="step-body">
+              <div class="step-action">Enter <strong>Comments:</strong> list the locations visited</div>
+              <div class="step-note">Locations only - no detail required. e.g. "Walmart, park, library"</div>
+            </div></div>
+            <div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-action">Click <strong>Clock Out</strong></div></div></div>
+          </div>
+
+          <div class="callout callout-warning" style="margin-top:16px;">
+            <div class="callout-icon">⚠️</div>
+            <div class="callout-body">
+              <div class="callout-title">CP Cannot Be Billed When…</div>
+              <ul class="callout-list">
+                <li>Staff or individuals are at <strong>the office</strong></li>
+                <li>At a <strong>doctor's appointment</strong></li>
+                <li>At the <strong>staff member's own house</strong></li>
+                <li>More than <strong>3 Shared Support individuals</strong> are present at the same community location</li>
+              </ul>
+            </div>
+          </div>
+        </div><!-- /web-cp -->
+
+        <div class="sub-pane" id="web-cla">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Select your <strong>name (top right)</strong> → <strong>Clock In</strong></div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Select <strong>Program:</strong> the individual's CLA site name</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select <strong>Job Code:</strong> Regular</div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body">
+              <div class="step-action">Confirm <strong>date and time</strong> are correct → click <strong>Clock In</strong></div>
+              <div class="step-note">Location is tracked at clock-in.</div>
+            </div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action"><em>When shift ends:</em> Select your name → <strong>Clock Out</strong></div></div></div>
+            <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-action">Confirm date and time are correct → click <strong>Clock Out</strong></div></div></div>
+          </div>
+        </div><!-- /web-cla -->
+      </div><!-- /cio-web -->
+
+      <!-- MOBILE TAB -->
+      <div class="tab-pane active" id="cio-mobile">
+        <div class="sub-tab-bar">
+          <button class="sub-tab-btn active" onclick="switchSub(this, 'mob-cp')">Community Participation (CP)</button>
+          <button class="sub-tab-btn" onclick="switchSub(this, 'mob-cla')">CLA</button>
+        </div>
+
+        <div class="sub-pane active" id="mob-cp">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Open the <strong>iCM app</strong> → log in with your usual credentials</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Tap <strong>Staff Time &amp; Attendance</strong> (green tab)</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select <strong>Program:</strong> Community Participation</div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-action">Select <strong>Job Code:</strong> Regular</div></div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action">Select the <strong>Individual</strong> you support</div></div></div>
+            <div class="step"><div class="step-num">6</div><div class="step-body">
+              <div class="step-action">Select <strong>Funding Stream:</strong> CPS 1:1 (or 2:1 if applicable) → tap <strong>Clock In</strong></div>
+              <div class="step-note">The app displays and tracks your location.</div>
+            </div></div>
+            <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-action"><em>When shift ends:</em> tap <strong>Staff Time &amp; Attendance</strong> (green tab) again</div></div></div>
+            <div class="step"><div class="step-num">8</div><div class="step-body">
+              <div class="step-action">Tap the <strong>Checklist link</strong> (blue text) → select all activities → tap <strong>Submit</strong></div>
+            </div></div>
+            <div class="step"><div class="step-num">9</div><div class="step-body">
+              <div class="step-action">Scroll down → enter <strong>Comments</strong> (locations visited)</div>
+              <div class="step-note">Locations only - no detail required.</div>
+            </div></div>
+            <div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-action">Tap <strong>Clock Out</strong></div></div></div>
+          </div>
+        </div><!-- /mob-cp -->
+
+        <div class="sub-pane" id="mob-cla">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Open the <strong>iCM app</strong> → log in</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Tap <strong>Staff Time &amp; Attendance</strong> (green tab)</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body">
+              <div class="step-action">Select <strong>Program:</strong> your CLA site → <strong>Job Code:</strong> Regular → tap <strong>Clock In</strong></div>
+              <div class="step-note">No comments are required for CLA.</div>
+            </div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-action"><em>When shift ends:</em> tap <strong>Staff Time &amp; Attendance</strong> (green tab) → scroll down → tap <strong>Clock Out</strong></div></div></div>
+          </div>
+        </div><!-- /mob-cla -->
+      </div><!-- /cio-mobile -->
+    </div><!-- /tab-group -->
+
+    <div class="callout callout-info">
+      <div class="callout-icon">⏱</div>
+      <div class="callout-body">
+        <div class="callout-title">Clock In/Out Reminders</div>
+        <ul class="callout-list">
+          <li>Always clock in and out <strong>in real time</strong></li>
+          <li>All punches must be entered by <strong>Monday at noon</strong></li>
+          <li>Made a mistake? See <a href="#edit-punches" style="color:#1D4ED8;">Section 3 - Editing a Punch</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 2. TRAINING PUNCHES -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="training">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <span class="section-icon">🎓</span>
+      <h2 class="section-title">Training Punches</h2>
+    </div>
+
+    <p style="font-size:14px; color:var(--text-mid); margin-bottom:16px;">Training types:</p>
+
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+      <div class="step" style="flex-direction:column; align-items:flex-start;">
+        <div style="display:flex; gap:14px; align-items:flex-start; width:100%;">
+          <div class="step-num" style="background:var(--gold-dim); flex-shrink:0;">A</div>
+          <div class="step-body">
+            <div class="step-action"><strong>In-House Training</strong> - trainings specific to the individual you support</div>
+            <div class="step-note">e.g. Who Is meetings, circle meetings, individual-specific training</div>
+          </div>
+        </div>
+      </div>
+      <div class="step" style="flex-direction:column; align-items:flex-start;">
+        <div style="display:flex; gap:14px; align-items:flex-start; width:100%;">
+          <div class="step-num" style="background:var(--gold-dim); flex-shrink:0;">B</div>
+          <div class="step-body">
+            <div class="step-action"><strong>General Training</strong> - organization-wide trainings done with Shared Support</div>
+            <div class="step-note">e.g. Annual training, First Aid/CPR. Includes a dropdown of all Shared Support trainings - select the one that best fits. It can be corrected later if needed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-group">
+      <div class="tab-bar">
+        <button class="tab-btn" onclick="switchTab(this, 'train-web')">🖥 Web Browser</button>
+        <button class="tab-btn active" onclick="switchTab(this, 'train-mobile')">📱 Mobile App</button>
+      </div>
+
+      <div class="tab-pane" id="train-web">
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">In a browser, select your <strong>name</strong> (top right) → <strong>Clock In</strong></div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <div class="step-action">Select <strong>Program: Admin</strong></div>
+            <div class="step-note">This opens Admin, Transfer, Training, and NATP options.</div>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select <strong>Training</strong> → choose <strong>In-House</strong> or <strong>General</strong></div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-action">For <strong>General</strong>: select the training from the dropdown list</div>
+            <div class="step-note">Pick the closest match - it can be edited afterward if it doesn't match exactly.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action">Select the <strong>Individual</strong> → confirm date/time → click <strong>Clock In</strong></div></div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-action">When training ends: select your name → <strong>Clock Out</strong></div></div></div>
+        </div>
+      </div>
+
+      <div class="tab-pane active" id="train-mobile">
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Open the <strong>iCM app</strong> → tap <strong>Staff Time &amp; Attendance</strong> (green tab)</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <div class="step-action">Tap the <strong>Admin</strong> option at the top right</div>
+            <div class="step-note">This opens Admin, Transfer, Training, and NATP options.</div>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select <strong>Training</strong> → choose <strong>In-House</strong> or <strong>General</strong></div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-action">For <strong>General</strong>: select the training from the dropdown list</div>
+            <div class="step-note">Pick the closest match - it can be edited afterward if it doesn't match exactly.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action">Select the <strong>Individual</strong> → confirm date/time → tap <strong>Clock In</strong></div></div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-action">When training ends: tap <strong>Staff Time &amp; Attendance</strong> → tap <strong>Clock Out</strong></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:16px;">
+      <div class="callout-icon">👤</div>
+      <div class="callout-body">
+        <div class="callout-title">Shadowing Punches</div>
+        <ul class="callout-list">
+          <li>Shadowing uses the <strong>regular clock-in flow</strong> - do not use the Admin option</li>
+          <li>When selecting <strong>Job Code</strong>, choose <strong>Shadowing</strong> instead of Regular</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 3. EDIT PUNCHES -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="edit-punches">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <span class="section-icon">✏️</span>
+      <h2 class="section-title">Editing a Punch</h2>
+    </div>
+
+    <div class="callout callout-warning" style="margin-bottom:16px;">
+      <div class="callout-icon">🌐</div>
+      <div class="callout-body">
+        <div class="callout-title">Browser Required</div>
+        <ul class="callout-list">
+          <li>Punch edits must be done in a <strong>web browser</strong> - this can be done on your phone's browser, an iPad, or a CLA computer</li>
+          <li>The mobile app itself does not support editing punches</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">In a browser, open iCM → select your <strong>name</strong> → <strong>My Timesheets</strong></div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Find your name → click anywhere in your <strong>timesheet row</strong></div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <div class="step-action">Scroll down to see all punches for the last two weeks</div>
+        <div class="step-note">Status shows as <strong>Open</strong> or <strong>Submitted</strong>. Only Open punches can be edited.</div>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-action">Under <strong>Action</strong>, click the dropdown → select <strong>Edit</strong></div></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action">Adjust the time or other details as needed</div></div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body">
+        <div class="step-action">Click <strong>SAVE</strong></div>
+      </div></div>
+    </div>
+
+    <div class="save-banner">
+      <div class="save-banner-icon">💾</div>
+      <div>
+        <h4>Always SAVE - Never Submit</h4>
+        <ul>
+          <li>Click <strong>SAVE</strong> when finished entering or editing a punch</li>
+          <li>Do <strong>NOT</strong> click Submit - your Program Specialist (PS) will submit on your behalf after review</li>
+          <li>Once submitted, a punch is <strong>locked</strong> and cannot be edited</li>
+          <li>If you accidentally click Submit, <strong>notify your PS immediately</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 3. HOURS & PTO BALANCE -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="hours-pto">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <span class="section-icon">📋</span>
+      <h2 class="section-title">Checking Your Hours &amp; PTO Balance</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Select your <strong>name (top right)</strong> → <strong>My Timesheets</strong></div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Find your name → click anywhere in your row</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <div class="step-action">Click the <strong>+ button</strong> next to <em>Time Off Balances</em> to see PTO and any other time off balances</div>
+        <div class="step-note">For example, if you have jury duty or bereavement hours available, you'll see those listed along with hours available for entry.</div>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <div class="step-action">Click the <strong>+ button</strong> next to <em>Total Work Hours</em> to see hours worked for the current week</div>
+        <div class="step-note">Select Week 2 to view the previous week. Holiday hours also appear here.</div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 4. REQUEST PTO -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="request-pto">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <span class="section-icon">📅</span>
+      <h2 class="section-title">Requesting PTO / Time Off</h2>
+    </div>
+
+    <div class="callout callout-warning" style="margin-bottom:16px;">
+      <div class="callout-icon">🌐</div>
+      <div class="callout-body">
+        <div class="callout-title">Browser Required</div>
+        <ul class="callout-list">
+          <li>PTO requests must be submitted in a <strong>web browser</strong> - this can be done on your phone's browser, an iPad, or a CLA computer</li>
+          <li>The mobile app itself does not support submitting PTO requests</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-bottom:16px;">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">How PTO Requests Work</div>
+        <ul class="callout-list">
+          <li><strong>Replaces paper PTO requests</strong> - submitting in iCM automatically notifies your House Supervisor and Program Specialist</li>
+          <li>The system <strong>automatically creates the punch</strong> for you once approved - you do not need to enter a separate punch</li>
+          <li>Your request will show <strong>Open status</strong> until the day of the PTO - this is normal, do not panic</li>
+          <li>Your PS will approve by adding a comment. The status won't change to Approved in the system until the pay period processes.</li>
+          <li><strong>You can also delete your own PTO request</strong> if your plans change (e.g. you pick up a shift and no longer need it)</li>
+          <li>If your supervisor denies the request, they will cancel/delete it and your hours will be restored</li>
+          <li>For time off requested far in the future, your balance can show as negative. This means you will have the time off available by then, but don't have it yet as of today.</li>
+          <li>Submitting immediately reduces your displayed balance - this is expected. Check <strong>UKG</strong> for your accurate balance for now.</li>
+          <li><strong>Jury duty or bereavement hours:</strong> Do not request through iCM - go through <strong>Maxine (HR)</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tab-group">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(this, 'pto-partial')">Partial Day (leaving early)</button>
+        <button class="tab-btn" onclick="switchTab(this, 'pto-vacation')">Full Day(s) / Vacation</button>
+      </div>
+
+      <div class="tab-pane active" id="pto-partial">
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Select your <strong>name</strong> → <strong>My Time Off Requests</strong></div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Select <strong>My Request Time Off</strong> → choose <strong>PTO</strong></div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <div class="step-action">Select <strong>Hours</strong> → enter the number of hours needed</div>
+            <div class="step-note">e.g., enter 2 hours if you need to leave early</div>
+          </div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-action">Add a <strong>comment</strong> with the name of the individual you support and the reason</div>
+            <div class="step-note">e.g. "John Smith - leaving 2 hours early for appointment"</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <div class="step-action">Click <strong>Save and Submit</strong></div>
+            <div class="step-note">For time-off requests, Save and Submit is correct - unlike punch entries.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="pto-vacation">
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Select your <strong>name</strong> → <strong>My Time Off Requests</strong></div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Select <strong>My Request Time Off</strong> → choose <strong>PTO</strong></div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select <strong>Hours</strong> → pick the first day → enter <strong>8 hours</strong></div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-action">Click the <strong>+ button</strong> to add the next day → enter 8 hours → repeat for each day</div>
+            <div class="step-note">You're able to go into a negative balance for time off requested in the future - this just means you don't have the hours available yet as of today.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <div class="step-action">Add a <strong>comment</strong> with the individual's name and dates (e.g. "John Smith - vacation 6/22 to 6/28")</div>
+          </div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-action">Click <strong>Save and Submit</strong></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 5. TRANSPORTATION -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="transport">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <span class="section-icon">🚗</span>
+      <h2 class="section-title">Transportation Log</h2>
+    </div>
+
+    <div class="callout callout-info" style="margin-bottom:16px;">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Log in Real Time</div>
+        <ul class="callout-list">
+          <li>Always enter transportation logs <strong>in real time</strong></li>
+          <li>Only add entries after the fact if you had <strong>no service</strong> or <strong>iCM was down</strong></li>
+          <li>For personal vehicles, log <strong>each individual trip</strong> separately</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tab-group">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(this, 'trans-web')">🖥 Web Browser</button>
+        <button class="tab-btn" onclick="switchTab(this, 'trans-mobile')">📱 Mobile App</button>
+      </div>
+
+      <!-- TRANSPORT WEB -->
+      <div class="tab-pane active" id="trans-web">
+        <div class="sub-tab-bar">
+          <button class="sub-tab-btn active" onclick="switchSub(this, 'tw-personal')">Personal Vehicle</button>
+          <button class="sub-tab-btn" onclick="switchSub(this, 'tw-company')">Company Vehicle</button>
+        </div>
+
+        <div class="sub-pane active" id="tw-personal">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Navigate to <strong>Transportation Log</strong> → click <strong>Add Entry</strong></div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Enter <strong>Start Date</strong> and <strong>Start Time</strong> for this trip</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Enter <strong>End Date</strong> and <strong>End Time</strong> for this trip</div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body">
+              <div class="step-action">Enter <strong>Starting Odometer</strong> and <strong>Ending Odometer</strong> for this trip</div>
+              <div class="step-note">Accurate odometer readings are required for mileage reimbursement.</div>
+            </div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action">Enter <strong>Starting Location</strong> and <strong>Ending Location</strong></div></div></div>
+            <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-action">Select the <strong>Individual</strong> being transported or supported</div></div></div>
+            <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-action">Enter the <strong>Purpose of the trip</strong> (locations visited)</div></div></div>
+            <div class="step"><div class="step-num">8</div><div class="step-body">
+              <div class="step-action">Click <strong>Save</strong> - then repeat from Step 1 for your next trip</div>
+              <div class="step-note">Each trip must be logged separately so mileage reimbursement is calculated accurately.</div>
+            </div></div>
+          </div>
+        </div>
+
+        <div class="sub-pane" id="tw-company">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Navigate to <strong>Fleet Management</strong> → <strong>Vehicles</strong></div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-action">Select the <strong>Program</strong> → click <strong>Search</strong> → find the vehicle for your individual</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Select the vehicle → find <strong>Distance Log</strong> → click <strong>Add</strong></div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body">
+              <div class="step-action">Enter the <strong>Starting Odometer</strong> at the beginning of your day and the <strong>Ending Odometer</strong> at the end of your day</div>
+              <div class="step-note">Company vehicle mileage is logged once per day as a total - not per individual trip.</div>
+            </div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-action">Enter <strong>Start Date/Time</strong> and <strong>End Date/Time</strong> for the day</div></div></div>
+            <div class="step"><div class="step-num">6</div><div class="step-body">
+              <div class="step-action">Select the <strong>Individual</strong> → check <em>"I completed my pre-trip vehicle inspection"</em></div>
+              <div class="step-note">This checkbox is required.</div>
+            </div></div>
+            <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-action">Enter <strong>Purpose of the trip</strong> (locations visited throughout the day) → click <strong>Save</strong></div></div></div>
+          </div>
+        </div>
+      </div><!-- /trans-web -->
+
+      <!-- TRANSPORT MOBILE -->
+      <div class="tab-pane" id="trans-mobile">
+        <div class="sub-tab-bar">
+          <button class="sub-tab-btn active" onclick="switchSub(this, 'tm-agency')">Agency (Company) Vehicle</button>
+          <button class="sub-tab-btn" onclick="switchSub(this, 'tm-personal')">Personal Vehicle</button>
+        </div>
+
+        <div class="sub-pane active" id="tm-agency">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Open the <strong>iCM app</strong> → tap <strong>Transportation Log</strong> (blue tab) → select <strong>Agency</strong></div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body">
+              <div class="step-action">Tap the <strong>QR code button</strong> (top right) → scan the QR code on the driver's side of the vehicle</div>
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Tap <strong>Add Entry</strong> (top right) at the <strong>start of your day</strong></div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body">
+              <div class="step-action">Enter the <strong>Starting Odometer</strong> - take a photo or type manually</div>
+              <div class="step-note">Manual entry is available if the photo doesn't capture correctly.</div>
+            </div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body">
+              <div class="step-action">Confirm <strong>date and time</strong> → select the <strong>Individual</strong> → check <em>pre-trip inspection box</em> → tap <strong>Save</strong> → tap <strong>Done</strong></div>
+            </div></div>
+            <div class="step"><div class="step-num">6</div><div class="step-body">
+              <div class="step-action">At the <strong>end of your day</strong>, tap <strong>End Trip</strong> (top right) → enter the End Odometer reading</div>
+              <div class="step-note">Company vehicle mileage is logged once per day as a total - not per individual trip.</div>
+            </div></div>
+            <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-action">Enter <strong>Purpose of the trip</strong> (all locations visited during the day) → tap <strong>Save</strong></div></div></div>
+          </div>
+        </div>
+
+        <div class="sub-pane" id="tm-personal">
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-action">Tap <strong>Transportation Log</strong> (blue tab) → select <strong>Personal Vehicle</strong> → tap <strong>Add Entry</strong></div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body">
+              <div class="step-action">Enter <strong>date, time</strong>, and <strong>Starting Odometer</strong> for this trip (photo or manual)</div>
+              <div class="step-note">Accurate odometer readings are required for mileage reimbursement.</div>
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-action">Enter <strong>Starting Location</strong> → tap <strong>Save</strong> → tap <strong>Done</strong></div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body">
+              <div class="step-action">When the trip ends: tap <strong>End Trip</strong> → enter <strong>End Date, End Time, End Odometer, Ending Location</strong>, and <strong>Purpose of trip</strong> → tap <strong>Save</strong></div>
+            </div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body">
+              <div class="step-action">Repeat from Step 1 for your next trip</div>
+              <div class="step-note">Each trip must be logged separately so mileage reimbursement is calculated accurately.</div>
+            </div></div>
+          </div>
+        </div>
+      </div><!-- /trans-mobile -->
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 7. FAQ -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="tips">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <span class="section-icon">❓</span>
+      <h2 class="section-title">FAQ</h2>
+    </div>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Do I need to add a comment when I clock in?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          You do not need to enter a clock-in comment for CLA or CP. Comments are only required when <strong>clocking out</strong> of a Community Participation (CP) shift.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Do I need to enter a comment when clocking out of CLA?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          No. Comments are only required for <strong>Community Participation</strong> punches. iCM will not require a comment to clock out of CLA.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What do I put in the CP comment field?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Just the <strong>locations you visited</strong> during the shift. No summaries, no detail about what you did there - just the place names. For example: "Walmart, Riverfront Park, library." iCM will not let you clock out of a CP shift until the checklist is completed and a comment is entered.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>I'm in a CP shift and need to take my individual to a doctor's appointment. What do I do?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          You need to <strong>clock out of CP first, then clock into CLA</strong>, and then go to the appointment. The same applies if you are switching to Job Support. You cannot bill CP while at a medical appointment.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>I missed a punch or forgot to clock in. What do I do?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Go to your <strong>Time Sheet</strong> in a browser and click the arrow next to <strong>Add Time Entry</strong>. Choose <strong>Regular Work</strong> or <strong>Admin</strong> as appropriate, then fill in the punch details. All punches must be entered by <strong>Monday at noon</strong>. Remember: click <strong>Save only</strong> - do not click Save and Submit.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>I accidentally clicked Submit on a punch. What now?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          If you don't need to edit the punch, don't worry about it! However, if you do need to make changes, <strong>reach out to your Program Specialist immediately.</strong> Once a punch is submitted it is locked and you cannot edit it yourself - your PS can reopen it for you.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What's the difference between Save and Save &amp; Submit?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          <strong>Save</strong> keeps the punch in Open status so it can still be edited. Your Program Specialist reviews Open punches and submits them on your behalf.<br><br>
+          <strong>Save &amp; Submit</strong> locks the punch immediately - it cannot be edited after that. Staff should always use Save only for punches. Save &amp; Submit is only correct when submitting a PTO request.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Is there a shadowing option when clocking in?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Yes. Use the <strong>regular clock-in flow</strong> (not Admin). When you get to Job Code, select <strong>Shadowing</strong> instead of Regular. You do not need to go into the Admin menu for shadowing.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How do I clock in for a training?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          You can do this on the <strong>web browser or the mobile app</strong>: select <strong>Program: Admin → Training</strong>. Then select <strong>In-House</strong> (for individual-specific trainings like Who Is meetings) or <strong>General</strong> (for organization-wide trainings like annual training or First Aid/CPR). For General, pick the closest match from the dropdown - it can be corrected by your PS if needed.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>My PTO request shows as Open. Was it approved?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Open status is <strong>normal</strong> - do not panic. PTO requests stay in Open status until the actual day of the PTO. Your Program Specialist will add a comment to let you know it has been reviewed. The status will not update to Approved in the system until the pay period processes. Check with your PS if you are unsure.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Do I need to enter a punch separately after submitting a PTO request?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          <strong>No.</strong> When a PTO request is approved, iCM automatically generates the punch for you. You only need to submit the request - no additional steps required.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>I put in PTO but now I don't need it. Can I cancel it?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Yes. You have permission to <strong>delete your own PTO request</strong> in iCM. Once deleted, your hours will be restored. Your House Supervisor or PS can also cancel it on your behalf.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>My PTO balance looks wrong in iCM.</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          PTO balances are still being migrated from DCI and may not be accurate yet in iCM. Check <strong>UKG</strong> for your current balance in the meantime (note that UKG is approximately two weeks behind). Balances will be updated in real time in iCM as soon as the migration is complete. You are allowed to go into a negative balance in iCM to request time off in advance.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How do I claim jury duty or bereavement hours?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Jury duty or bereavement hours are <strong>not</strong> requested through iCM. Contact <strong>Maxine in HR</strong> to process these hours.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Can I use the app on a house tablet?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          The iCM app is <strong>not installed on house tablets</strong>. Use the <strong>web browser</strong> on tablets instead. The app is available for personal phones (iOS and Android) - see the Links section for download links.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Should I Google "iCareManager" to find the login page?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          <strong>No.</strong> Do not Google iCareManager - you may land on the wrong page. Use the direct link in the <a href="#links" style="color:var(--maroon); font-weight:600;">Links section</a> of this guide, or bookmark it on your device.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>I'm working Tuesday 6/30/2026 into Wednesday 7/1/2026 - how do I handle the DCI to iCM transition?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          You do <strong>not</strong> need to wake up at midnight to clock out of DCI. Wait until the next morning, clock in to iCM, then <strong>edit the punch</strong> to show your actual start time of midnight. Your PS can help if needed.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What do I do if iCM is down or I don't have service?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Document your time on paper as you normally would, then enter your punches and transportation logs into iCM once the system is back up and you have service. This is also the only time transportation logs should be added after the fact rather than in real time.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Do I need to log transportation for every single stop when using my personal vehicle?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Yes. When using a <strong>personal vehicle</strong>, you must log each trip separately with odometer readings at every stop. This is required for accurate mileage reimbursement. If you are using a <strong>company vehicle</strong>, you only need to log once at the start of your day and close it out at the end of the day.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 8. LINKS -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="links">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <span class="section-icon">🔗</span>
+      <h2 class="section-title">Quick Access Links</h2>
+    </div>
+
+    <div class="link-cards">
+      <a href="https://app.icaremanager.com/c/NDQ2LFNoYXJlZCBTdXBwb3J0LDEwLzYvMjAyMyAxMDoyODozOSBBTS8=-tWP5e5MZ4mI=" target="_blank" class="link-card">
+        <div class="link-card-icon">🖥️</div>
+        <div class="link-card-body">
+          <div class="link-card-title">iCM Web Portal</div>
+          <div class="link-card-desc">Log in on any browser — use this link for clocking in/out and transportation logs</div>
+          <div class="link-card-url">app.icaremanager.com</div>
+        </div>
+        <div class="link-card-arrow">→</div>
+      </a>
+
+      <a href="https://play.google.com/store/apps/details?id=com.icaremanager&pcampaignid=web_share" target="_blank" class="link-card">
+        <div class="link-card-icon">🤖</div>
+        <div class="link-card-body">
+          <div class="link-card-title">iCareManager — Android App</div>
+          <div class="link-card-desc">Download from the Google Play Store</div>
+          <div class="link-card-url">Google Play Store</div>
+        </div>
+        <div class="link-card-arrow">→</div>
+      </a>
+
+      <a href="https://apps.apple.com/us/app/icaremanager/id1457859369" target="_blank" class="link-card">
+        <div class="link-card-icon">🍎</div>
+        <div class="link-card-body">
+          <div class="link-card-title">iCareManager — iPhone App</div>
+          <div class="link-card-desc">Download from the Apple App Store</div>
+          <div class="link-card-url">Apple App Store</div>
+        </div>
+        <div class="link-card-arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 9. QUICK REFERENCE -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="quick-ref">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <span class="section-icon">⚡</span>
+      <h2 class="section-title">Quick Reference</h2>
+    </div>
+
+    <table class="qr-table">
+      <thead>
+        <tr><th>Task</th><th>Where / How</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Clock in (web)</td><td><span class="qr-path">Your Name (top right) → Clock In</span></td></tr>
+        <tr><td>Clock out (web)</td><td><span class="qr-path">Your Name (top right) → Clock Out</span></td></tr>
+        <tr><td>Clock in/out (app)</td><td><span class="qr-path">Staff Time &amp; Attendance (green tab)</span></td></tr>
+        <tr><td>Training punch (web or app)</td><td><span class="qr-path">Program/Admin → Training → In-House or General</span></td></tr>
+        <tr><td>Shadowing punch</td><td><span class="qr-path">Regular clock-in flow → Job Code: Shadowing (no Admin needed)</span></td></tr>
+        <tr><td>Edit a punch</td><td><span class="qr-path">Browser required (phone, iPad, or CLA computer): Your Name → My Timesheets → Action dropdown → Edit → SAVE</span></td></tr>
+        <tr><td>Check PTO balance</td><td><span class="qr-path">Your Name → My Timesheets → + next to Time Off Balances</span></td></tr>
+        <tr><td>Check hours worked</td><td><span class="qr-path">Your Name → My Timesheets → + next to Total Work Hours</span></td></tr>
+        <tr><td>Request time off</td><td><span class="qr-path">Browser required (phone, iPad, or CLA computer): Your Name → My Time Off Requests → My Request Time Off</span></td></tr>
+        <tr><td>Personal vehicle (web)</td><td><span class="qr-path">Transportation Log → Add Entry (log each trip separately for reimbursement)</span></td></tr>
+        <tr><td>Company vehicle (web)</td><td><span class="qr-path">Fleet Management → Vehicles → Distance Log → Add (once per day, start and end odometer)</span></td></tr>
+        <tr><td>Transportation (app)</td><td><span class="qr-path">Transportation Log (blue tab) → Agency or Personal Vehicle</span></td></tr>
+        <tr><td>Punch deadline</td><td><strong>All punches entered by Monday at noon</strong></td></tr>
+        <tr><td>PTO balance not right?</td><td>Check <strong>UKG</strong> for accurate balance; contact your PS with questions</td></tr>
+        <tr><td>Jury duty or bereavement hours</td><td>Contact <strong>Maxine (HR)</strong> - do not request through iCM</td></tr>
+        <tr><td>iCM is down / no service</td><td>Document on paper, enter into iCM once back up</td></tr>
+        <tr><td>Forgot your password</td><td>Contact your supervisor or HR</td></tr>
+        <tr><td>Accidentally submitted a punch</td><td><strong>Notify your Program Specialist immediately</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ──────────────────────────────────── -->
+<footer class="site-footer">
+  <strong>Shared Support Inc.</strong> &nbsp;|&nbsp; iCM Time &amp; Attendance Reference &nbsp;|&nbsp; Questions? Contact your Program Specialist or IT
+</footer>
+
+<!-- ── SCROLL TOP ──────────────────────────────── -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
+
+<script>
+// ── FAQ ACCORDION ─────────────────────────────────
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  // Toggle current
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ── TAB SWITCHING ─────────────────────────────────
+function switchTab(btn, paneId) {
+  const bar = btn.closest('.tab-bar');
+  const group = btn.closest('.tab-group');
+  bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  group.querySelectorAll(':scope > .tab-pane').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(paneId);
+  if (target) target.classList.add('active');
+}
+
+// ── SUB-TAB SWITCHING ──────────────────────────────
+function switchSub(btn, paneId) {
+  const bar = btn.closest('.sub-tab-bar');
+  // find parent tab-pane or tab-group to scope sub-panes
+  const scope = btn.closest('.tab-pane') || btn.closest('.tab-group') || document;
+  bar.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  scope.querySelectorAll('.sub-pane').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(paneId);
+  if (target) target.classList.add('active');
+}
+
+// ── NAV ACTIVE STATE (passive scroll, no IntersectionObserver) ────
+const sections = document.querySelectorAll('.section');
+const navPills = document.querySelectorAll('.nav-pill');
+function updateActiveNav() {
+  const scrollY = window.scrollY + 120;
+  let current = null;
+  sections.forEach(s => {
+    if (s.offsetTop <= scrollY) current = s.id;
+  });
+  navPills.forEach(p => {
+    const active = p.getAttribute('href') === '#' + current;
+    p.classList.toggle('active', active);
+    if (active) {
+      const navStrip = document.querySelector('.nav-strip');
+      const navInner = document.querySelector('.nav-inner');
+      const pillLeft = p.offsetLeft - navInner.offsetLeft;
+      const pillRight = pillLeft + p.offsetWidth;
+      const stripWidth = navStrip.offsetWidth;
+      const sl = navStrip.scrollLeft;
+      if (pillLeft < sl) navStrip.scrollLeft = pillLeft - 16;
+      else if (pillRight > sl + stripWidth) navStrip.scrollLeft = pillRight - stripWidth + 16;
+    }
+  });
+}
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+
+// ── SCROLL TOP BUTTON ─────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 300);
+});
+
+// ── SEARCH ────────────────────────────────────────
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  searchClear.classList.toggle('visible', q.length > 0);
+
+  // Remove old highlights
+  document.querySelectorAll('mark').forEach(m => {
+    m.outerHTML = m.innerHTML;
+  });
+
+  if (!q) {
+    // Show all steps
+    document.querySelectorAll('.step, .qr-table tr').forEach(el => el.style.display = '');
+    return;
+  }
+
+  // Highlight matching text in step-action and step-note
+  const walker = document.createTreeWalker(document.querySelector('.main'), NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) {
+    const n = walker.currentNode;
+    if (n.parentElement.closest('.search-wrap')) continue;
+    if (n.textContent.toLowerCase().includes(q)) nodes.push(n);
+  }
+  nodes.forEach(node => {
+    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    const span = document.createElement('span');
+    span.innerHTML = node.textContent.replace(re, '<mark>$1</mark>');
+    node.parentNode.replaceChild(span, node);
+  });
+
+  // Scroll to first match
+  const firstMark = document.querySelector('mark');
+  if (firstMark) firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input'));
+  searchInput.focus();
+});
+</script>
+</body>
+</html>
