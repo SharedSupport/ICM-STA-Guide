@@ -41,15 +41,19 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ── STICKY WRAPPER (header + nav together) ─── */
+  .sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+
   /* ── HEADER ──────────────────────────────────── */
   .site-header {
     background: var(--maroon);
     color: white;
     padding: 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,.25);
   }
   .header-inner {
     max-width: 960px;
@@ -154,6 +158,21 @@
     border-bottom-color: var(--gold);
   }
   .nav-pill .icon { font-size: 14px; }
+  .nav-search-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(255,255,255,.7);
+    font-size: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color var(--transition), border-color var(--transition);
+    margin-left: 4px;
+  }
+  .nav-search-btn:hover { color: white; border-bottom-color: var(--gold); }
 
   /* ── LAYOUT ──────────────────────────────────── */
   .main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -199,7 +218,7 @@
   .hero-chip:hover { background: rgba(255,255,255,.2); }
 
   /* ── SECTION ─────────────────────────────────── */
-  .section { margin-bottom: 48px; scroll-margin-top: 100px; }
+  .section { margin-bottom: 48px; scroll-margin-top: 120px; }
   .section-header {
     display: flex;
     align-items: center;
@@ -598,7 +617,10 @@
 </head>
 <body>
 
-<!-- ── STICKY HEADER ───────────────────────────── -->
+<!-- ── STICKY WRAPPER ──────────────────────────── -->
+<div class="sticky-top">
+
+<!-- ── HEADER ──────────────────────────────────── -->
 <header class="site-header">
   <div class="header-inner">
     <div class="header-logo">
@@ -624,9 +646,12 @@
     <a href="#tips"          class="nav-pill"><span class="icon">❓</span> FAQ</a>
     <a href="#links"         class="nav-pill"><span class="icon">🔗</span> Links</a>
     <a href="#quick-ref"     class="nav-pill"><span class="icon">⚡</span> Quick Reference</a>
+    <button class="nav-search-btn" id="navSearchBtn" aria-label="Search" onclick="focusSearch()">🔍</button>
   </div>
   <div class="nav-scroll-hint" id="navHint">›</div>
 </nav>
+
+</div><!-- /sticky-top -->
 
 <!-- ── MAIN ────────────────────────────────────── -->
 <main class="main">
@@ -1728,6 +1753,12 @@ searchClear.addEventListener('click', () => {
   searchClear.classList.remove('visible');
   searchInput.focus();
 });
+
+// ── NAV SEARCH BUTTON ─────────────────────────────
+function focusSearch() {
+  searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => searchInput.focus(), 300);
+}
 </script>
 </body>
 </html>
