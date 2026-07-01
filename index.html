@@ -73,13 +73,6 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 20px;
   }
-  .header-logo-img {
-    height: 48px;
-    width: auto;
-    display: block;
-    flex-shrink: 0;
-    margin-left: auto;
-  }
   .header-title h1 {
     font-size: 17px;
     font-weight: 700;
@@ -91,16 +84,12 @@
     color: rgba(255,255,255,.65);
     margin-top: 1px;
   }
-  .header-badge {
+  .header-logo-img {
+    height: 48px;
+    width: auto;
+    display: block;
+    flex-shrink: 0;
     margin-left: auto;
-    background: var(--gold);
-    color: var(--maroon-dark);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
-    letter-spacing: .02em;
-    white-space: nowrap;
   }
 
   /* ── NAV PILLS ───────────────────────────────── */
@@ -108,8 +97,36 @@
     background: var(--maroon-dark);
     overflow-x: auto;
     scrollbar-width: none;
+    position: relative;
   }
   .nav-strip::-webkit-scrollbar { display: none; }
+
+  .nav-scroll-hint {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--maroon-dark);
+    color: rgba(255,255,255,.7);
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 102;
+    transition: opacity .25s;
+    border-left: 1px solid rgba(255,255,255,.1);
+  }
+  .nav-scroll-hint.hidden { opacity: 0; }
+  @keyframes hint-bounce {
+    0%   { transform: translateX(0); }
+    30%  { transform: translateX(5px); }
+    60%  { transform: translateX(0); }
+    80%  { transform: translateX(3px); }
+    100% { transform: translateX(0); }
+  }
+  .nav-scroll-hint.bouncing { animation: hint-bounce 0.7s ease; }
   .nav-inner {
     max-width: 960px;
     margin: 0 auto;
@@ -474,7 +491,7 @@
     .hero { padding: 28px 22px; }
     .hero h2 { font-size: 21px; }
     .hero::after { display: none; }
-    .header-badge { display: none; }
+    .header-logo-img { height: 36px; }
     .qr-table td:first-child { width: 140px; }
   }
 
@@ -608,6 +625,7 @@
     <a href="#links"         class="nav-pill"><span class="icon">🔗</span> Links</a>
     <a href="#quick-ref"     class="nav-pill"><span class="icon">⚡</span> Quick Reference</a>
   </div>
+  <div class="nav-scroll-hint" id="navHint">›</div>
 </nav>
 
 <!-- ── MAIN ────────────────────────────────────── -->
@@ -908,7 +926,7 @@
   </section>
 
   <!-- ══════════════════════════════════════════ -->
-  <!-- 3. HOURS & PTO BALANCE -->
+  <!-- 4. HOURS & PTO BALANCE -->
   <!-- ══════════════════════════════════════════ -->
   <section class="section" id="hours-pto">
     <div class="section-header">
@@ -944,7 +962,7 @@
   </section>
 
   <!-- ══════════════════════════════════════════ -->
-  <!-- 4. REQUEST PTO -->
+  <!-- 5. REQUEST PTO -->
   <!-- ══════════════════════════════════════════ -->
   <section class="section" id="request-pto">
     <div class="section-header">
@@ -1026,7 +1044,7 @@
   </section>
 
   <!-- ══════════════════════════════════════════ -->
-  <!-- 5. TRANSPORTATION -->
+  <!-- 6. TRANSPORTATION -->
   <!-- ══════════════════════════════════════════ -->
   <section class="section" id="transport">
     <div class="section-header">
@@ -1243,6 +1261,16 @@
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How do I clock hours for NADSP training?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          NADSP (National Alliance for Direct Support Professionals) training hours are logged through the <strong>Admin</strong> menu. Use the regular clock-in flow and select <strong>Admin</strong> as the program, then select the <strong>NADSP</strong> job code from the dropdown. This is separate from the In-House and General training options — look specifically for the NADSP job code rather than going into the Training submenu.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
           <span>How do I clock in for a training?</span>
           <span class="faq-arrow">▾</span>
         </button>
@@ -1333,6 +1361,16 @@
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Is iCM used for anything other than time and attendance?</span>
+          <span class="faq-arrow">▾</span>
+        </button>
+        <div class="faq-a">
+          Yes. iCareManager is also the platform Shared Support uses as an <strong>Electronic Health Record (EHR)</strong> and <strong>Electronic Medication Administration Record (EMAR)</strong>. This means iCM is also where staff document daily notes, medication administration, care tracking, behaviors, appointments, and other information about the individuals we support. <strong>This guide covers Time &amp; Attendance only.</strong> The documentation, care tracking, and EMAR functions are covered in separate training materials. If you are ever unsure which part of iCM you should be in, ask your Program Specialist or House Supervisor.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
           <span>What do I do if iCM is down or I don't have service?</span>
           <span class="faq-arrow">▾</span>
         </button>
@@ -1416,6 +1454,7 @@
         <tr><td>Clock out (web)</td><td><span class="qr-path">Your Name (top right) → Clock Out</span></td></tr>
         <tr><td>Clock in/out (app)</td><td><span class="qr-path">Staff Time &amp; Attendance (green tab)</span></td></tr>
         <tr><td>Training punch (web or app)</td><td><span class="qr-path">Program/Admin → Training → In-House or General</span></td></tr>
+        <tr><td>NADSP training punch</td><td><span class="qr-path">Program/Admin → Job Code: NADSP</span></td></tr>
         <tr><td>Shadowing punch</td><td><span class="qr-path">Regular clock-in flow → Job Code: Shadowing (no Admin needed)</span></td></tr>
         <tr><td>Edit a punch</td><td><span class="qr-path">Browser required (phone, iPad, or CLA computer): Your Name → My Timesheets → Action dropdown → Edit → SAVE</span></td></tr>
         <tr><td>Check PTO balance</td><td><span class="qr-path">Your Name → My Timesheets → + next to Time Off Balances</span></td></tr>
@@ -1478,6 +1517,24 @@ function switchSub(btn, paneId) {
   if (target) target.classList.add('active');
 }
 
+// ── NAV SCROLL HINT ───────────────────────────────
+const navStrip = document.querySelector('.nav-strip');
+const navHint = document.getElementById('navHint');
+function updateNavHint() {
+  const atEnd = navStrip.scrollLeft + navStrip.clientWidth >= navStrip.scrollWidth - 4;
+  navHint.classList.toggle('hidden', atEnd);
+}
+navStrip.addEventListener('scroll', updateNavHint, { passive: true });
+updateNavHint();
+
+// Bounce arrow on load to hint it's scrollable
+setTimeout(() => {
+  if (navStrip.scrollWidth > navStrip.clientWidth) {
+    navHint.classList.add('bouncing');
+    navHint.addEventListener('animationend', () => navHint.classList.remove('bouncing'), { once: true });
+  }
+}, 900);
+
 // ── NAV ACTIVE STATE (passive scroll, no IntersectionObserver) ────
 const sections = document.querySelectorAll('.section');
 const navPills = document.querySelectorAll('.nav-pill');
@@ -1491,7 +1548,6 @@ function updateActiveNav() {
     const active = p.getAttribute('href') === '#' + current;
     p.classList.toggle('active', active);
     if (active) {
-      const navStrip = document.querySelector('.nav-strip');
       const navInner = document.querySelector('.nav-inner');
       const pillLeft = p.offsetLeft - navInner.offsetLeft;
       const pillRight = pillLeft + p.offsetWidth;
