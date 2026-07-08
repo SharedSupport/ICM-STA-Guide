@@ -1,0 +1,9 @@
+node_modules/
+dist/
+api/node_modules/
+api/dist/
+api/local.settings.json
+.swa/
+*.log
+tsconfig.tsbuildinfo
+shared/*.js

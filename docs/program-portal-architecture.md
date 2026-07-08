@@ -25,14 +25,14 @@ Total expected cost: **$0/month** at this scale. Nothing above requires a paid t
 
 ## 3. Reading the OneDrive/SharePoint files
 
-Your note — "files should be accessible from staff computers" — is compatible with a cloud backend: the Excel workbooks (Appointment Report, BM-PRN Report, Chart Compliance Audit, HRST Expiration Report, FMLA Tracker, DCI Verification Report, etc.) already live in **SharePoint** and are just *synced* to Ryan's OneDrive folder locally. Staff keep using them exactly as they do now — nothing about that workflow changes.
+Your note — "files should be accessible from staff computers" — is compatible with a cloud backend: the Excel workbooks (Appointment Report, BM-PRN Report, Chart Compliance Audit, HRST Expiration Report, FMLA Tracker, ICM Verification Report, etc.) already live in **SharePoint** and are just *synced* to Ryan's OneDrive folder locally. Staff keep using them exactly as they do now — nothing about that workflow changes.
 
 The Azure Function reads the **same SharePoint library** directly via the **Microsoft Graph API**, using **application (app-only) permissions**:
 
 - Register one Entra ID app (e.g. "Program Portal Data Service").
 - Grant it `Files.Read.All` (or narrower, `Sites.Selected` scoped just to the specific SharePoint site, which is better security practice) as an **application permission**, admin-consented once by a tenant admin.
 - The Function authenticates with a client credentials flow (certificate preferred over a secret) — no user has to be logged in for this job to run, so it can run on a schedule (e.g. nightly at the same time the VBA does today) independent of anyone's desktop being on.
-- Parse the `.xlsx`/`.xlsm` files server-side (Node.js: `exceljs`; Python: `openpyxl`/`pandas` — pick based on team familiarity) using the same logic currently in the VBA (`BuildApptSection`, `BuildBMSection`, `BuildDCISection`, `BuildAssessmentSection`, `BuildFMLASection`, `BuildChartComplianceSection`, etc.), ported to whichever backend language we pick.
+- Parse the `.xlsx`/`.xlsm` files server-side (Node.js: `exceljs`; Python: `openpyxl`/`pandas` — pick based on team familiarity) using the same logic currently in the VBA (`BuildApptSection`, `BuildBMSection`, `BuildDCISection` (now the ICM STA Issues section), `BuildAssessmentSection`, `BuildFMLASection`, `BuildChartComplianceSection`, etc.), ported to whichever backend language we pick.
 
 This also removes the current single point of failure where the whole pipeline depends on Ryan's machine being on with Outlook and Excel installed.
 
@@ -45,7 +45,7 @@ A Cosmos DB container `DailyItems`, one document per flagged item, partitioned b
   "id": "psEmail|category|stableKey",
   "psEmail": "jsmith@sharedsupport.org",
   "psName": "Jane Smith",
-  "category": "BM_PRN_MISSED | HRST_EXPIRING | CHART_MISSED | DCI_ISSUE | APPOINTMENT | FMLA",
+  "category": "BM_PRN_MISSED | HRST_EXPIRING | CHART_MISSED | ICM_ISSUE | APPOINTMENT | FMLA",
   "severity": "red | amber | info",
   "individual": "JOHN DOE",
   "description": "MISSED PRN (4 days since last BM)",
@@ -64,10 +64,10 @@ A Cosmos DB container `DailyItems`, one document per flagged item, partitioned b
 This is the one piece I don't think I should decide unilaterally, because getting it wrong has real consequences for a program-compliance tool:
 
 - **Option A — Reviewed = permanently dismissed.** Once clicked, that exact item never reappears, even if the underlying condition (e.g., still-missed PRN) persists. Risk: a safety-relevant issue could get acknowledged once and then silently drop off everyone's radar even though it's still unresolved.
-- **Option B — Reviewed = dismissed until the underlying data changes.** If the *same* missed PRN is still missed tomorrow, it reappears (since it's a live, unresolved problem); but a one-time item like "new DCI issue logged" stays dismissed once acknowledged since there's nothing further to resolve.
-- **Option C — Category-dependent.** Safety/compliance-critical categories (missed PRN, overdue HRST, missed chart) always use Option B (reappear until resolved in the source system); administrative/informational categories (new DCI issue, upcoming appointment) use Option A (dismiss on click, since acknowledging it *is* the resolution).
+- **Option B — Reviewed = dismissed until the underlying data changes.** If the *same* missed PRN is still missed tomorrow, it reappears (since it's a live, unresolved problem); but a one-time item like "new ICM STA issue logged" stays dismissed once acknowledged since there's nothing further to resolve.
+- **Option C — Category-dependent.** Safety/compliance-critical categories (missed PRN, overdue HRST, missed chart) always use Option B (reappear until resolved in the source system); administrative/informational categories (new ICM STA issue, upcoming appointment) use Option A (dismiss on click, since acknowledging it *is* the resolution).
 
-**My recommendation is Option C**, since it matches how the VBA itself already treats these differently (e.g., a missed PRN keeps showing as "MISSED" in the source report until someone actually enters the BM, whereas a DCI issue just needs someone to see it and correct it in ICM). But this needs your sign-off before I build the suppression logic, since it directly affects what a PS can and can't safely stop worrying about.
+**My recommendation is Option C**, since it matches how the VBA itself already treats these differently (e.g., a missed PRN keeps showing as "MISSED" in the source report until someone actually enters the BM, whereas an ICM STA issue just needs someone to see it and correct it in the system). But this needs your sign-off before I build the suppression logic, since it directly affects what a PS can and can't safely stop worrying about.
 
 ## 6. Authorization model
 
@@ -80,7 +80,7 @@ This is the one piece I don't think I should decide unilaterally, because gettin
 1. **Skeleton**: SWA app + Entra ID login working, empty dashboard shell, Cosmos DB provisioned, Key Vault + Graph app registration in place. No real data yet.
 2. **First data slice**: Port BM/PRN + Appointments parsing into the nightly Function, populate Cosmos DB, render read-only on the dashboard.
 3. **Mark-reviewed loop**: Add the click-to-review API + the suppression policy from §5, once you've confirmed the approach.
-4. **Remaining sections**: Chart Compliance, HRST, DCI issues, FMLA — same pattern, one at a time, so each can be verified against a real day's data before moving to the next.
+4. **Remaining sections**: Chart Compliance, HRST, ICM STA issues, FMLA — same pattern, one at a time, so each can be verified against a real day's data before moving to the next.
 5. **Email shrink** (optional, later): Once the portal is trustworthy, cut the daily email down to a short overview + "View your full brief" link, instead of the full HTML report. This is also when we could optionally move email sending itself off the VBA/Outlook desktop dependency and onto Graph API `sendMail`, if that dependency becomes a problem.
 
 ## 8. What I need from you before Phase 1 starts
